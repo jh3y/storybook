@@ -30,6 +30,7 @@ export interface UI {
   url?: string;
   enableShortcuts: boolean;
   docsMode: boolean;
+  filter?: string;
 }
 
 export interface SubState {

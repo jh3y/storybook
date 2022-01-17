@@ -4,6 +4,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { styled } from '@storybook/theming';
 import { ScrollArea, Spaced } from '@storybook/components';
 import type { StoriesHash, State } from '@storybook/api';
+import { useStorybookState } from '@storybook/api';
 
 import { Heading } from './Heading';
 
@@ -100,6 +101,7 @@ export const Sidebar: FunctionComponent<SidebarProps> = React.memo(
     enableShortcuts = true,
     refs = {},
   }) => {
+    const state = useStorybookState();
     const selected: Selection = useMemo(() => storyId && { storyId, refId }, [storyId, refId]);
     const stories = useMemo(
       () => (DOCS_MODE ? collapseAllStories : collapseDocsOnlyStories)(storiesHash),
@@ -108,6 +110,8 @@ export const Sidebar: FunctionComponent<SidebarProps> = React.memo(
     const dataset = useCombination(stories, storiesConfigured, storiesFailed, refs);
     const isLoading = !dataset.hash[DEFAULT_REF_ID].ready;
     const lastViewedProps = useLastViewed(selected);
+
+    console.info(state, 'STATE');
 
     return (
       <Container className="container sidebar-container">
@@ -124,6 +128,7 @@ export const Sidebar: FunctionComponent<SidebarProps> = React.memo(
               dataset={dataset}
               isLoading={isLoading}
               enableShortcuts={enableShortcuts}
+              initialQuery={state?.ui?.filter}
               {...lastViewedProps}
             >
               {({

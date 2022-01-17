@@ -25,6 +25,26 @@ import { searchItem } from './utils';
 const { document } = global;
 
 const DEFAULT_MAX_SEARCH_RESULTS = 50;
+export const FILTER_KEY = 'filter';
+
+let searchParams: URLSearchParams;
+/**
+ * Used if we want to sync user input in the address bar.
+ */
+const syncUrlToFilter = (value: string) => {
+  if (!searchParams) searchParams = new URLSearchParams(global.window.location.search);
+  if (global.window.history.replaceState) {
+    if (value !== '') searchParams.set(FILTER_KEY, value);
+    else searchParams.delete(FILTER_KEY);
+    global.window.history.replaceState(
+      {},
+      '',
+      `${global.window.location.origin}${
+        searchParams.toString() !== '' ? '?' : ''
+      }${searchParams.toString()}`
+    );
+  }
+};
 
 const options = {
   shouldSort: true,
@@ -286,6 +306,7 @@ export const Search = React.memo<{
     return (
       <Downshift<DownshiftItem>
         initialInputValue={initialQuery}
+        initialIsOpen={initialQuery !== ''}
         stateReducer={stateReducer}
         // @ts-ignore
         itemToString={(result) => result?.item?.name || ''}
@@ -305,6 +326,8 @@ export const Search = React.memo<{
         }) => {
           const input = inputValue ? inputValue.trim() : '';
           let results: DownshiftItem[] = input ? getResults(input) : [];
+
+          syncUrlToFilter(input);
 
           const lastViewed = !input && getLastViewed();
           if (lastViewed && lastViewed.length) {
