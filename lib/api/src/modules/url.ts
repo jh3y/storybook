@@ -54,7 +54,6 @@ const initialUrlSupport = ({
     selectedKind, // deprecated
     selectedStory, // deprecated
     path: queryPath,
-    filter,
     ...otherParams // the rest gets passed to the iframe
   } = queryFromLocation(location);
 
@@ -66,7 +65,6 @@ const initialUrlSupport = ({
   };
   const ui: Partial<UI> = {
     enableShortcuts: parseBoolean(shortcuts),
-    filter,
   };
   const selectedPanel = addonPanel || undefined;
 

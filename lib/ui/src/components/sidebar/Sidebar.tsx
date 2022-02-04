@@ -111,8 +111,6 @@ export const Sidebar: FunctionComponent<SidebarProps> = React.memo(
     const isLoading = !dataset.hash[DEFAULT_REF_ID].ready;
     const lastViewedProps = useLastViewed(selected);
 
-    console.info(state, 'STATE');
-
     return (
       <Container className="container sidebar-container">
         <CustomScrollArea vertical>
@@ -128,7 +126,7 @@ export const Sidebar: FunctionComponent<SidebarProps> = React.memo(
               dataset={dataset}
               isLoading={isLoading}
               enableShortcuts={enableShortcuts}
-              initialQuery={state?.ui?.filter}
+              initialQuery={state?.customQueryParams?.filter}
               {...lastViewedProps}
             >
               {({

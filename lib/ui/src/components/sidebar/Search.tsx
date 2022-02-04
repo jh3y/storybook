@@ -324,12 +324,12 @@ export const Search = React.memo<{
           getRootProps,
           highlightedIndex,
         }) => {
-          const input = inputValue ? inputValue.trim() : '';
-          let results: DownshiftItem[] = input ? getResults(input) : [];
+          const filter = inputValue ? inputValue.trim() : '';
+          let results: DownshiftItem[] = filter ? getResults(filter) : [];
 
-          syncUrlToFilter(input);
+          syncUrlToFilter(filter);
 
-          const lastViewed = !input && getLastViewed();
+          const lastViewed = !filter && getLastViewed();
           if (lastViewed && lastViewed.length) {
             results = lastViewed.reduce((acc, { storyId, refId }) => {
               const data = dataset.hash[refId];
@@ -373,13 +373,18 @@ export const Search = React.memo<{
                 className="search-field"
               >
                 <SearchIcon icon="search" />
-                <Input {...inputProps} />
+                <Input
+                  {...inputProps}
+                  onInput={(e) => {
+                    api.setQueryParams({ filter: e.target.value });
+                  }}
+                />
                 {enableShortcuts && <FocusKey>/</FocusKey>}
                 <ClearIcon icon="cross" onClick={() => clearSelection()} />
               </SearchField>
               <FocusContainer tabIndex={0} id="storybook-explorer-menu">
                 {children({
-                  query: input,
+                  query: filter,
                   results,
                   isBrowsing: !isOpen && document.activeElement !== inputRef.current,
                   closeMenu,
