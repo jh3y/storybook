@@ -25,6 +25,26 @@ import { searchItem } from './utils';
 const { document } = global;
 
 const DEFAULT_MAX_SEARCH_RESULTS = 50;
+export const FILTER_KEY = 'filter';
+
+let searchParams: URLSearchParams;
+/**
+ * Used if we want to sync user input in the address bar.
+ */
+const syncUrlToFilter = (value: string) => {
+  if (!searchParams) searchParams = new URLSearchParams(global.window.location.search);
+  if (global.window.history.replaceState) {
+    if (value !== '' && value !== null) searchParams.set(FILTER_KEY, value);
+    else searchParams.delete(FILTER_KEY);
+    global.window.history.replaceState(
+      {},
+      '',
+      `${global.window.location.origin}${
+        searchParams.toString() !== '' ? '?' : ''
+      }${searchParams.toString()}`
+    );
+  }
+};
 
 const options = {
   shouldSort: true,
@@ -286,6 +306,7 @@ export const Search = React.memo<{
     return (
       <Downshift<DownshiftItem>
         initialInputValue={initialQuery}
+        initialIsOpen={initialQuery !== ''}
         stateReducer={stateReducer}
         // @ts-ignore
         itemToString={(result) => result?.item?.name || ''}
@@ -303,10 +324,14 @@ export const Search = React.memo<{
           getRootProps,
           highlightedIndex,
         }) => {
-          const input = inputValue ? inputValue.trim() : '';
-          let results: DownshiftItem[] = input ? getResults(input) : [];
+          const isBrowsing = !isOpen && document.activeElement !== inputRef.current;
+          const filter = inputValue ? inputValue.trim() : '';
+          let results: DownshiftItem[] = filter ? getResults(filter) : [];
 
-          const lastViewed = !input && getLastViewed();
+          syncUrlToFilter(isBrowsing ? null : filter);
+          api.setQueryParams({ filter: isBrowsing ? null : filter });
+
+          const lastViewed = !filter && getLastViewed();
           if (lastViewed && lastViewed.length) {
             results = lastViewed.reduce((acc, { storyId, refId }) => {
               const data = dataset.hash[refId];
@@ -350,15 +375,22 @@ export const Search = React.memo<{
                 className="search-field"
               >
                 <SearchIcon icon="search" />
-                <Input {...inputProps} />
+                <Input
+                  {...inputProps}
+                  onInput={(e) => {
+                    api.setQueryParams({
+                      filter: isBrowsing ? null : (e.target as any).value,
+                    });
+                  }}
+                />
                 {enableShortcuts && <FocusKey>/</FocusKey>}
                 <ClearIcon icon="cross" onClick={() => clearSelection()} />
               </SearchField>
               <FocusContainer tabIndex={0} id="storybook-explorer-menu">
                 {children({
-                  query: input,
+                  query: filter,
                   results,
-                  isBrowsing: !isOpen && document.activeElement !== inputRef.current,
+                  isBrowsing,
                   closeMenu,
                   getMenuProps,
                   getItemProps,
