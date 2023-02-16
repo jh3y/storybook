@@ -105,7 +105,6 @@ export interface API_Layout {
 export interface API_UI {
   name?: string;
   url?: string;
-  filter?: string;
   enableShortcuts: boolean;
 }
 

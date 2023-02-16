@@ -38,7 +38,11 @@ beforeEach(() => {
     global.window.location.href = url;
     global.window.location.search = url.indexOf('?') !== -1 ? url.slice(url.indexOf('?')) : '';
   };
-
+  mockedApi.useStorybookApi.mockReset();
+  const mockApi: Partial<api.API> = {
+    setQueryParams: () => ({}),
+  };
+  mockedApi.useStorybookApi.mockReturnValue(mockApi as any);
   mockedApi.useStorybookState.mockReset();
 });
 
@@ -52,7 +56,10 @@ describe('Search - reflect search in URL', () => {
   it('prefills input with search params', async () => {
     const state: Partial<api.State> = {
       storyId: 'jest',
-      ui: { filter: 'filter', enableShortcuts: true },
+      customQueryParams: {
+        filter: 'filter',
+      },
+      ui: { enableShortcuts: true },
     };
     mockedApi.useStorybookState.mockReturnValue(state as any);
     setLocation('?path=story&filter=filter');
