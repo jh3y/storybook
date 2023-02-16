@@ -332,7 +332,6 @@ export const Search = React.memo<{
         const input = inputValue ? inputValue.trim() : '';
         let results: DownshiftItem[] = input ? getResults(input) : [];
 
-        // Sync to the Storybook UI
         const isBrowsing = !isOpen && document.activeElement !== inputRef.current;
         syncUrlToFilter(isBrowsing ? null : input);
         api.setQueryParams({ filter: isBrowsing ? null : input });
