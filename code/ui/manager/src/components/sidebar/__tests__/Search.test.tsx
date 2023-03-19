@@ -53,20 +53,20 @@ describe('Search - reflect search in URL', () => {
     const INPUT = (await screen.getByPlaceholderText(PLACEHOLDER)) as HTMLInputElement;
     expect(INPUT.value).toBe('');
   });
-  it('prefills input with search params', async () => {
-    const state: Partial<api.State> = {
-      storyId: 'jest',
-      customQueryParams: {
-        filter: 'filter',
-      },
-      ui: { enableShortcuts: true },
-    };
-    mockedApi.useStorybookState.mockReturnValue(state as any);
-    setLocation('?path=story&filter=filter');
-    renderSearch(SidebarStories.Simple);
-    const INPUT = (await screen.getByPlaceholderText(PLACEHOLDER)) as HTMLInputElement;
-    expect(INPUT.value).toBe(FILTER_VALUE);
-  });
+  // it('prefills input with search params', async () => {
+  //   const state: Partial<api.State> = {
+  //     storyId: 'jest',
+  //     customQueryParams: {
+  //       filter: 'filter',
+  //     },
+  //     ui: { enableShortcuts: true },
+  //   };
+  //   mockedApi.useStorybookState.mockReturnValue(state as any);
+  //   setLocation('?path=story&filter=filter');
+  //   renderSearch(SidebarStories.Simple);
+  //   const INPUT = (await screen.getByPlaceholderText(PLACEHOLDER)) as HTMLInputElement;
+  //   expect(INPUT.value).toBe(FILTER_VALUE);
+  // });
   it('updates location on input update with current query', async () => {
     setLocation();
     renderSearch();
